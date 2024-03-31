@@ -1,11 +1,10 @@
-<section fxLayout="column"
-         [ngClass]="sketchStyle">
+<section fxLayout="column">
   <section fxLayout="row"
            fxLayoutAlign="space-between center">
     <p class="mat-title m8">{{title}}</p>
   </section>
   <section class="m8 elevated rounded"
-           [style.width.px]="width"
-           [style.height.px]="height"
+           [style.width.px]="screenWidth"
+           [style.height.px]="screenHeight"
            #canvas></section>
 </section>

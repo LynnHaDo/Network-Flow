@@ -6,6 +6,8 @@ import {
 
 import * as p5 from 'p5';
 
+// Reference: https://github.com/andresrodriguez55/algorithmsVisualizer/blob/gh-pages/src/Pages/Graphs/SketchGraphs.js
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
