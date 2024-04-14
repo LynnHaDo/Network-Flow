@@ -1,0 +1,28 @@
+<p class="mb-2">{{ msg }}</p>
+<div id="flow-input" *ngIf = "showForm">
+  <form id="graph-input" [formGroup]="flowFormGroup" (ngSubmit)="onSubmit()">
+    <div class="input-field">
+      <label for="flow">Enter a flow amount for this edge</label>
+      <input type="text" id="flow" formControlName="flow" />
+    </div>
+    <div
+      *ngIf="flow.invalid && (flow.touched || flow.dirty)"
+      class="error-message"
+    >
+      <div *ngIf="flow.errors?.['required']">
+        <p>Please enter a flow amount</p>
+      </div>
+      <div *ngIf="flow.errors?.['pattern']">
+        <p>Please enter a number</p>
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="fill-btn mt-3"
+      [disabled]="flowFormGroup.invalid"
+    >
+      Continue
+    </button>
+  </form>
+</div>

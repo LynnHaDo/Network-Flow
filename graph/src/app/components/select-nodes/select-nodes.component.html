@@ -1,0 +1,43 @@
+<form
+        id="graph-input"
+        [formGroup]="graphFormGroup"
+        (ngSubmit)="onSubmit()"
+      >
+        <div class="input-field">
+          <label for="source">Source</label>
+          <input type="text" id="source" formControlName="source" />
+        </div>
+        <div
+          *ngIf="source.invalid && (source.touched || source.dirty)"
+          class="error-message"
+        >
+          <div *ngIf="source.errors?.['required']">
+            <p>Please enter the source node</p>
+          </div>
+          <div *ngIf="source.errors?.['pattern']">
+            <p>Please enter a number</p>
+          </div>
+        </div>
+        <div class="input-field mt-2">
+            <label for="source">Sink</label>
+            <input type="text" id="sink" formControlName="sink" />
+          </div>
+          <div
+            *ngIf="sink.invalid && (sink.touched || sink.dirty)"
+            class="error-message"
+          >
+            <div *ngIf="sink.errors?.['required']">
+              <p>Please enter the sink node</p>
+            </div>
+            <div *ngIf="sink.errors?.['pattern']">
+              <p>Please enter a number</p>
+            </div>
+          </div>
+        <button
+          type="submit"
+          class="fill-btn mt-3"
+          [disabled]="graphFormGroup.invalid"
+        >
+          Continue
+        </button>
+      </form>

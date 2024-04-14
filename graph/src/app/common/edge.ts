@@ -1,14 +1,28 @@
-export class Edge {
-    flow!: number;
-    capacity!: number;
+import { Vertex } from "./vertex";
 
-    constructor(flow: number, capacity: number){
-        this.flow = flow;
-        this.capacity = capacity
+export class Edge {
+    capacity!: number;
+    flow!: number;
+    source!: Vertex; // source id
+    target!: Vertex; // target id
+
+    constructor(){}
+
+    setEdge(source: Vertex, target: Vertex, capacity: number){
+        this.source = source;
+        this.target = target;
+        this.capacity = capacity;
+        this.flow = 0;
     }
+    
 
     // Add flow by a specified number
     addFlowByNum(bottleNeck: number){
         this.flow += bottleNeck
+    }
+
+    setEdgeValue(flow: number, capacity: number){
+        this.flow = flow;
+        this.capacity = capacity;
     }
 }

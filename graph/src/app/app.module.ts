@@ -1,21 +1,24 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
-import { MatIconModule } from '@angular/material/icon';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { ReactiveFormsModule } from '@angular/forms';
+import { SelectNodesComponent } from './components/select-nodes/select-nodes.component';
+import { SendFlowComponent } from './components/send-flow/send-flow.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SelectNodesComponent,
+    SendFlowComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule,
-    MatIconModule
+    ReactiveFormsModule,
+    NgbModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

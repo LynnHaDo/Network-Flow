@@ -1,10 +1,11 @@
 <section fxLayout="column">
-  <section fxLayout="row"
-           fxLayoutAlign="space-between center">
-    <p class="mat-title m8">{{title}}</p>
-  </section>
-  <section class="m8 elevated rounded"
-           [style.width.px]="screenWidth"
-           [style.height.px]="screenHeight"
-           #canvas></section>
+  <h1 class="center mb-3 mt-5">Network Flow</h1>
+  <div class="row">
+    <div class="col-lg-8 order-1">
+        <div id = "cy"></div>
+    </div>
+    <div class="col-lg-4 order-2">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
 </section>
