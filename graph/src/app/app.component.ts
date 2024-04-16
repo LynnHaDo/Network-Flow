@@ -9,13 +9,10 @@ import { GraphInitService } from './services/graph-init.service';
 })
 export class AppComponent implements OnInit {
   cy: cytoscape.Core = this.graphInitService.getGraph();
-  sourceNode: cytoscape.NodeSingular = this.graphInitService.sourceNode;
-  sinkNode: cytoscape.NodeSingular = this.graphInitService.sinkNode;
 
   ngOnInit(): void {
-    
     this.graphInitService.makeGraph();
-    this.graphInitService.highlightSourceAndSink();
+    
   }
 
   constructor(private graphInitService: GraphInitService) {}

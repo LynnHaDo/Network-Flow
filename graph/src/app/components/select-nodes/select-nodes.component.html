@@ -17,6 +17,9 @@
           <div *ngIf="source.errors?.['pattern']">
             <p>Please enter a number</p>
           </div>
+          <div *ngIf="source.errors?.['checkSourceSinkId']">
+            <p>Please enter a number within the range!</p>
+          </div>
         </div>
         <div class="input-field mt-2">
             <label for="source">Sink</label>
@@ -27,11 +30,14 @@
             class="error-message"
           >
             <div *ngIf="sink.errors?.['required']">
-              <p>Please enter the sink node</p>
+              <p>Please enter the sink node.</p>
             </div>
             <div *ngIf="sink.errors?.['pattern']">
-              <p>Please enter a number</p>
+              <p>Please enter a number.</p>
             </div>
+            <div *ngIf="sink.errors?.['checkSourceSinkId']">
+                <p>Please enter a number within the range!</p>
+              </div>
           </div>
         <button
           type="submit"
@@ -41,3 +47,18 @@
           Continue
         </button>
       </form>
+
+      <div class="modal" 
+      id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true"
+      [ngStyle] = "{'display': displayStyle}">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              The source and sink are not connected! Please choose another set of vertices. 
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click) = "closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>

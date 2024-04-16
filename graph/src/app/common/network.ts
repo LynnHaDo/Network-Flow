@@ -2,8 +2,9 @@ import { Edge } from './edge';
 import { Vertex } from './vertex';
 
 export class Network {
-  adjMatrix: Edge[][] = [];
+  adjMatrix: any = [];
   paths: any[] = [];
+  pathCounter: number = 0;
 
   constructor() {}
 
@@ -11,18 +12,13 @@ export class Network {
     for (var i: number = 0; i <= numVertices; i++) {
       this.adjMatrix[i] = [];
       for (var j: number = 0; j <= numVertices; j++) {
-        this.adjMatrix[i][j] = new Edge();
+        this.adjMatrix[i][j] = undefined;
       }
     }
   }
 
-  isEdgeExist(sourceVertex: Vertex, targetVertex: Vertex) {
-    let source = sourceVertex.id;
-    let target = targetVertex.id;
-    return (
-      this.adjMatrix[source][target] != undefined &&
-      this.adjMatrix[source][target] != null
-    );
+  isEdgeExist(source: number, target: number) {
+    return this.adjMatrix[source][target] != undefined
   }
 
   addEdge(sourceVertex: Vertex, targetVertex: Vertex, capacity: number) {
@@ -30,9 +26,12 @@ export class Network {
     let target = targetVertex.id;
     if (source == target) return false;
 
+    this.adjMatrix[source][target] = new Edge();
     this.adjMatrix[source][target].setEdge(sourceVertex, targetVertex, capacity);
 
-    if (!this.isEdgeExist(targetVertex, sourceVertex)) {
+    // Set initial backward edge of 0
+    if (!this.isEdgeExist(target, source)) {
+      this.adjMatrix[target][source] = new Edge();
       this.adjMatrix[target][source].setEdge(targetVertex, sourceVertex, 0);
     }
 
@@ -49,7 +48,7 @@ export class Network {
     while (queue.length) {
       let current: number = queue.shift()!;
       let connectedEdges = this.adjMatrix[current].filter(
-        (edge) => edge.capacity
+        (edge: any) => edge != undefined && edge.capacity
       );
       for (let edge of connectedEdges) {
         if (edge.capacity > 0 && visited.indexOf(edge.target.id) == -1) {
@@ -78,17 +77,16 @@ export class Network {
     visited: boolean[],
     path: any[]
   ): any {
-
+    
     if (sourceVertex.id == sinkVertex.id){
-        this.paths.push(path);
         return;
-    }
+    } 
 
     let current = sourceVertex;
     visited[current.id] = true; // mark as visited
 
     let connectedEdges = this.adjMatrix[current.id].filter(
-        (edge) => edge.capacity
+        (edge: any) => edge != undefined && edge.capacity
     );
 
     let flow = Number.MAX_VALUE;

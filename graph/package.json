@@ -32,6 +32,7 @@
     "@angular-devkit/build-angular": "^16.2.6",
     "@angular/cli": "^16.2.6",
     "@angular/compiler-cli": "^16.2.0",
+    "@types/bootstrap": "^5.2.10",
     "@types/cytoscape": "^3.21.0",
     "@types/jasmine": "~4.3.0",
     "@types/p5": "^1.7.6",

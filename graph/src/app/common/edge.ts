@@ -14,7 +14,6 @@ export class Edge {
         this.capacity = capacity;
         this.flow = 0;
     }
-    
 
     // Add flow by a specified number
     addFlowByNum(bottleNeck: number){

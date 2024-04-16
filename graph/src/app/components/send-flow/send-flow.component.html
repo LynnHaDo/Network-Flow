@@ -1,28 +1,77 @@
 <p class="mb-2">{{ msg }}</p>
-<div id="flow-input" *ngIf = "showForm">
+<div id="flow-input" *ngIf="showForm">
   <form id="graph-input" [formGroup]="flowFormGroup" (ngSubmit)="onSubmit()">
-    <div class="input-field">
-      <label for="flow">Enter a flow amount for this edge</label>
-      <input type="text" id="flow" formControlName="flow" />
-    </div>
-    <div
-      *ngIf="flow.invalid && (flow.touched || flow.dirty)"
-      class="error-message"
-    >
-      <div *ngIf="flow.errors?.['required']">
-        <p>Please enter a flow amount</p>
+    <div class="input-wrapper">
+      <div class="input-field">
+        <label for="flow">Enter a flow amount for this edge</label>
+        <input type="text" id="flow" formControlName="flow" />
       </div>
-      <div *ngIf="flow.errors?.['pattern']">
-        <p>Please enter a number</p>
+      <div
+        *ngIf="flow.invalid && (flow.touched || flow.dirty)"
+        class="error-message"
+      >
+        <div *ngIf="flow.errors?.['required']">
+          <p>Please enter a flow amount.</p>
+        </div>
+        <div *ngIf="flow.errors?.['pattern']">
+          <p>Please enter an integer.</p>
+        </div>
+        <div *ngIf="flow.errors?.['checkFlowCapacity']">
+          <p>Flow does not respect capacity constraint!</p>
+        </div>
       </div>
     </div>
 
-    <button
-      type="submit"
-      class="fill-btn mt-3"
-      [disabled]="flowFormGroup.invalid"
-    >
-      Continue
-    </button>
+    <div class="row button-rows mt-4">
+      <button type="submit" [disabled]="flowFormGroup.invalid">Continue</button>
+    </div>
   </form>
 </div>
+<div class="row mt-2">
+  <div class="col-lg-6">
+    <button type="button" (click)="calculateFlow()">Calculate flow</button>
+    <div class="mt-2" *ngIf="showFlowInput">
+      <form [formGroup]="flowCalculateGroup" (ngSubmit)="compute()">
+        <div class="input-wrapper">
+          <div class="input-field">
+            <label for="flowVal">Enter the flow value</label>
+            <input type="text" id="flowVal" formControlName="flowVal" />
+          </div>
+          <div
+            *ngIf="flowVal.invalid && (flowVal.touched || flowVal.dirty)"
+            class="error-message"
+          >
+            <div *ngIf="flowVal.errors?.['required']">
+              <p>Please enter a flow amount.</p>
+            </div>
+            <div *ngIf="flowVal.errors?.['pattern']">
+              <p>Please enter an integer.</p>
+            </div>
+          </div>
+        </div>
+        <button type="submit" [disabled]="flowCalculateGroup.invalid">
+          Check
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <button type="button" class="regular-btn" (click)="goBack()">
+      Back to step 1
+    </button>
+  </div>
+</div>
+<div class="modal" 
+      id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true"
+      [ngStyle] = "{'display': flowError}">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body">
+              The flow is invalid! (Hint: double check each <em>internal</em> vertices if the sum of flow in = sum of flow out) 
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click) = "closeModal()">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>

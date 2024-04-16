@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {
   FormBuilder,
   FormControl,
@@ -7,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { GraphInitService } from 'src/app/services/graph-init.service';
+import { FlowValidator } from 'src/app/validators/flow-validator';
 
 @Component({
   selector: 'app-select-nodes',
@@ -18,12 +20,16 @@ export class SelectNodesComponent {
     source: new FormControl('1', [
       Validators.required,
       Validators.pattern('^(0|[1-9][0-9]*)$'),
+      FlowValidator.checkSourceSinkId(this.graphInitService.vertices.length)
     ]),
     sink: new FormControl('13', [
       Validators.required,
       Validators.pattern('^(0|[1-9][0-9]*)$'),
+      FlowValidator.checkSourceSinkId(this.graphInitService.vertices.length)
     ]),
   });
+
+  displayStyle: string = "none";
 
   get source() {
     return this.graphFormGroup.get('source')!;
@@ -39,11 +45,19 @@ export class SelectNodesComponent {
     this.graphInitService.resetNodes();
     const sourceId = parseInt(this.graphFormGroup.get('source')!.value);
     const sinkId = parseInt(this.graphFormGroup.get('sink')!.value);
-    this.graphInitService.highlightNode(parseInt(this.graphFormGroup.get('source')!.value));
-    this.graphInitService.highlightNode(parseInt(this.graphFormGroup.get('sink')!.value));
-    this.graphInitService.sourceNode = this.graphInitService.cy.nodes('[name' + sourceId + ']')[0];
-    this.graphInitService.sinkNode = this.graphInitService.cy.nodes('[name=' + sinkId + ']')[0];
-    this.graphInitService.findPathsBetweenSourceAndSink(sourceId, sinkId);
+    if (!this.graphInitService.network.areTwoNodesConnected(sourceId, sinkId)){
+        this.displayStyle = "block";
+        return;
+    }
+    this.graphInitService.highlightNode(sourceId);
+    this.graphInitService.highlightNode(sinkId);
+    this.graphInitService.setSource(sourceId);
+    this.graphInitService.setSink(sinkId);
+    this.graphInitService.findPathsBetweenSourceAndSink();
     this.router.navigate(['step-two'])
+  }
+
+  closeModal(){
+    this.displayStyle = "none";
   }
 }

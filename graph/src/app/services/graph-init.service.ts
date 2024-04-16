@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as cytoscape from 'cytoscape';
 import { Network } from '../common/network';
 import { Vertex } from '../common/vertex';
+import { Edge } from '../common/edge';
 
 const nodes = [
   { id: 1, name: 1, x: 150, y: 240 },
@@ -56,10 +57,10 @@ const edges = [
 })
 export class GraphInitService {
   cy!: cytoscape.Core;
-  sourceNode!: cytoscape.NodeSingular;
-  sinkNode!: cytoscape.NodeSingular;
   network = new Network();
   vertices: Vertex[] = [];
+  sourceNode!: Vertex;
+  sinkNode!: Vertex;
 
   constructor() {}
 
@@ -175,17 +176,25 @@ export class GraphInitService {
     });
   }
 
-  resetNodes() {
-    this.cy.elements().removeClass("highlighted")
+  setSource(sourceId: number){
+    this.sourceNode = this.vertices.filter(el => el.id == sourceId)[0];
   }
 
-  highlightSourceAndSink(){
-    if (this.sourceNode && !this.sourceNode.hasClass("highlighted")){
-        this.sourceNode.addClass("highlighted");
-    }
-    if (this.sinkNode && !this.sinkNode.hasClass("highlighted")){
-        this.sinkNode.addClass("highlighted");
-    }
+  setSink(sinkId: number){
+    this.sinkNode = this.vertices.filter(el => el.id == sinkId)[0];
+  }
+
+  resetNodes() {
+    this.cy.nodes().removeClass("highlighted");
+  }
+
+  removeHighlightedEdges() {
+    this.cy.edges().removeClass("highlighted");
+  }
+
+  resetEdges() {
+    this.cy.edges().removeClass("selected");
+    this.cy.edges().removeClass("highlighted");
   }
 
   highlightNode(name: number) {
@@ -196,9 +205,35 @@ export class GraphInitService {
   }
 
   // Find paths
-  findPathsBetweenSourceAndSink(sourceId: number, sinkId: number){
-    let sourceNode = this.vertices.filter((ver) => ver.id == sourceId)[0]
-    let sinkNode = this.vertices.filter((ver) => ver.id == sinkId)[0]
-    console.log(this.network.findPaths(sourceNode, sinkNode))
+  findPathsBetweenSourceAndSink(){
+    console.log(this.network.findPaths(this.sourceNode, this.sinkNode))
   }
+
+  isFlowValid(){
+    return true;
+  }
+
+  checkFlowAmount(){
+    const edgesConnectedToSource = this.network.adjMatrix[this.sourceNode.id].filter((el: any) => el != undefined && el.capacity);
+    let edgesConnectedToSink: Edge[] = []
+    this.network.adjMatrix[this.sinkNode.id].filter((el: any) => el != undefined && el.capacity == 0).forEach(
+        (edge: Edge) => {
+            edgesConnectedToSink.push(this.network.adjMatrix[edge.target.id][edge.source.id]);
+        }
+    )
+
+    let flowOutOfSource = 0;
+    let flowIntoSink = 0;
+
+    for (let edge of edgesConnectedToSource){
+        flowOutOfSource += edge.flow;
+    }
+
+    for (let edge of edgesConnectedToSink){
+        flowIntoSink += edge.flow
+    }
+
+    return flowOutOfSource == flowIntoSink;
+  }
+
 }
