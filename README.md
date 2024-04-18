@@ -115,7 +115,13 @@ git clone https://github.com/LynnHaDo/Network-Flow.git
 cd graph
 ```
 
-4. Run on server
+4. Install packages
+
+```
+npm install
+```
+
+5. Run the app on server
 
 ```
 ng s
