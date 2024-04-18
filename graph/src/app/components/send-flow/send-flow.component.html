@@ -1,4 +1,10 @@
-<p class="mb-2">{{ msg }}</p>
+<h4 class="mb-2">{{ msg }}</h4>
+<div class="path-log mb-2">
+  <h5>Available paths from {{ sourceTxt }} to {{ sinkTxt }}</h5>
+  <p *ngFor="let path of paths">
+    {{ printPath(path) }}
+  </p>
+</div>
 <div id="flow-input" *ngIf="showForm">
   <form id="graph-input" [formGroup]="flowFormGroup" (ngSubmit)="onSubmit()">
     <div class="input-wrapper">
@@ -52,6 +58,12 @@
         <button type="submit" [disabled]="flowCalculateGroup.invalid">
           Check
         </button>
+        <div class = "alert alert-success" *ngIf = "clicked && !flowCalculatedError">
+            Correct! The flow is {{ flowValue }}.
+        </div>
+        <div class = "alert alert-warning" *ngIf = "clicked && flowCalculatedError">
+            Incorrect flow amount! (Hint: Please make sure it is equal to the sum of the flow out of the source (and flow into the sink).)
+        </div>
       </form>
     </div>
   </div>
@@ -61,17 +73,48 @@
     </button>
   </div>
 </div>
-<div class="modal" 
-      id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true"
-      [ngStyle] = "{'display': flowError}">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-body">
-              The flow is invalid! (Hint: double check each <em>internal</em> vertices if the sum of flow in = sum of flow out) 
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" (click) = "closeModal()">Close</button>
-            </div>
-          </div>
-        </div>
+<div
+  class="modal"
+  id="edgeInvalidModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="edgeInvalidModalLabel"
+  aria-hidden="true"
+  [ngStyle]="{ display: edgeError }"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        The edge selected ({{ selectedEdgeTxt }}) is not on any paths from the source {{ sourceTxt }} to the sink {{ sinkTxt }}! Please select again.
       </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModalEdge()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal"
+  id="errorModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="errorModalLabel"
+  aria-hidden="true"
+  [ngStyle]="{ display: flowError }"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        The flow is invalid! (Hint: double check each <em>internal</em> vertices
+        if the sum of flow in = sum of flow out)
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModalFlow()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,9 +2,7 @@ export class Vertex {
     id!: number;
     x!: number;
     y!: number;
-    parent!: any;
     name!: number;    
-    paths!: {}
 
     constructor(id: number, x: number, y: number, name: number){
         this.id = id;
@@ -12,4 +10,9 @@ export class Vertex {
         this.y = y;
         this.name = name;
     }
+
+    printVertex(){
+        return "Vertex " + this.id;
+    }
+
 }

@@ -1,14 +1,31 @@
-html, body { height: 100%; overflow-x: hidden}
+:root {
+    --pastel: #F8F3EA;
+    --dark-navy: #0B1957;
+    --dark-blue: #94B6EF;
+    --blue: #9ECCFA;
+    --pastel-blue: #D1E0FF;
+    --red: #990808;
+    --yellow: #E6E279;
+}
+
+html, body { height: 100%; overflow-x: hidden; background-color: var(--pastel)}
 body { margin: 0; font-family: "Reddit Mono", monospace!important; }
 
 h1 {
     font-size: 40px;
     font-weight: 800;
+    color: var(--dark-navy)
+}
+
+h2, h3, h4, h5 {
+    color: var(--dark-navy);
 }
 
 .center {
     text-align: center;
 }
+
+/*** Canvas ***/
 
 #cy {
     height: 500px;
@@ -19,3 +36,8 @@ h1 {
     position: absolute;
     left: 0;
 }
+
+/*** Form ***/
+
+
+

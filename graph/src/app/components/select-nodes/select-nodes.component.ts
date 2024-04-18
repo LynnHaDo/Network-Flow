@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {
   FormBuilder,
@@ -15,7 +15,7 @@ import { FlowValidator } from 'src/app/validators/flow-validator';
   templateUrl: './select-nodes.component.html',
   styleUrls: ['./select-nodes.component.css'],
 })
-export class SelectNodesComponent {
+export class SelectNodesComponent implements OnInit {
   graphFormGroup: FormGroup = this.formBuilder.group({
     source: new FormControl('1', [
       Validators.required,
@@ -40,6 +40,10 @@ export class SelectNodesComponent {
   }
   constructor(private formBuilder: FormBuilder, private graphInitService: GraphInitService, private router: Router) {}
 
+  ngOnInit(): void {
+     GraphInitService.areSourceSinkSet.next(false);
+  }
+
   // Select source and sink
   onSubmit() {
     this.graphInitService.resetNodes();
@@ -51,8 +55,7 @@ export class SelectNodesComponent {
     }
     this.graphInitService.highlightNode(sourceId);
     this.graphInitService.highlightNode(sinkId);
-    this.graphInitService.setSource(sourceId);
-    this.graphInitService.setSink(sinkId);
+    this.graphInitService.setSourceandSink(sourceId, sinkId);
     this.graphInitService.findPathsBetweenSourceAndSink();
     this.router.navigate(['step-two'])
   }

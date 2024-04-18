@@ -3,6 +3,7 @@ import * as cytoscape from 'cytoscape';
 import { Network } from '../common/network';
 import { Vertex } from '../common/vertex';
 import { Edge } from '../common/edge';
+import { BehaviorSubject } from 'rxjs';
 
 const nodes = [
   { id: 1, name: 1, x: 150, y: 240 },
@@ -59,8 +60,12 @@ export class GraphInitService {
   cy!: cytoscape.Core;
   network = new Network();
   vertices: Vertex[] = [];
+  static areSourceSinkSet: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   sourceNode!: Vertex;
   sinkNode!: Vertex;
+  paths!: Vertex[][];
+  verticesConsidered!: number[];
+  flowVal!: number;
 
   constructor() {}
 
@@ -72,7 +77,7 @@ export class GraphInitService {
         {
           selector: 'node',
           css: {
-            'content': 'data(id)',
+            content: 'data(id)',
             'text-valign': 'center',
             'text-halign': 'center',
           },
@@ -89,11 +94,11 @@ export class GraphInitService {
           },
         },
         {
-            selector: '.selected',
-            css: {
-              'line-color': '#F6B8C8',
-              'target-arrow-color': '#F6B8C8'
-            }, 
+          selector: '.selected',
+          css: {
+            'line-color': '#F6B8C8',
+            'target-arrow-color': '#F6B8C8',
+          },
         },
         {
           selector: '.highlighted',
@@ -115,22 +120,21 @@ export class GraphInitService {
 
     nodes.forEach((node) => {
       this.addNode(this.cy, node.id, node.name, node.x, node.y);
-      this.vertices.push(new Vertex(node.id, node.x, node.y, node.name))
+      this.vertices.push(new Vertex(node.id, node.x, node.y, node.name));
     });
 
-    this.network.initMatrix(this.vertices.length)
+    this.network.initMatrix(this.vertices.length);
 
     edges.forEach((edge) => {
       this.addEdge(this.cy, edge.id, edge.label, edge.source, edge.target);
       let source = this.vertices.filter((ver) => ver.id == edge.source)[0];
       let target = this.vertices.filter((ver) => ver.id == edge.target)[0];
-      target.parent = source;
       this.network.addEdge(source, target, edge.label);
     });
   }
 
-  getGraph(){
-    return this.cy
+  getGraph() {
+    return this.cy;
   }
 
   // Add a node to the graph
@@ -170,31 +174,29 @@ export class GraphInitService {
         target: target,
       },
       css: {
-        label: "0/" + label.toString(),
+        label: '0/' + label.toString(),
       },
       selectable: true,
     });
   }
 
-  setSource(sourceId: number){
-    this.sourceNode = this.vertices.filter(el => el.id == sourceId)[0];
-  }
-
-  setSink(sinkId: number){
-    this.sinkNode = this.vertices.filter(el => el.id == sinkId)[0];
+  setSourceandSink(sourceId: number, sinkId: number) {
+    this.sourceNode = this.vertices.filter((el) => el.id == sourceId)[0];
+    this.sinkNode = this.vertices.filter((el) => el.id == sinkId)[0];
+    GraphInitService.areSourceSinkSet.next(true);
   }
 
   resetNodes() {
-    this.cy.nodes().removeClass("highlighted");
+    this.cy.nodes().removeClass('highlighted');
   }
 
   removeHighlightedEdges() {
-    this.cy.edges().removeClass("highlighted");
+    this.cy.edges().removeClass('highlighted');
   }
 
   resetEdges() {
-    this.cy.edges().removeClass("selected");
-    this.cy.edges().removeClass("highlighted");
+    this.cy.edges().removeClass('selected');
+    this.cy.edges().removeClass('highlighted');
   }
 
   highlightNode(name: number) {
@@ -205,35 +207,75 @@ export class GraphInitService {
   }
 
   // Find paths
-  findPathsBetweenSourceAndSink(){
-    console.log(this.network.findPaths(this.sourceNode, this.sinkNode))
+  findPathsBetweenSourceAndSink() {
+    this.paths = this.network.findPaths(this.sourceNode, this.sinkNode);
+    this.verticesConsidered = [];
+    for (let vertex of this.vertices){
+        for (let path of this.paths){
+            if (path.filter(el => el.id == vertex.id) != undefined && path.filter(el => el.id == vertex.id).length > 0){
+                this.verticesConsidered.push(vertex.id);
+            }
+        }
+    }
+    this.verticesConsidered = Array.from(new Set(this.verticesConsidered));
   }
 
-  isFlowValid(){
+
+  isFlowValid() {
+    if (this.checkFlowAmount(0) == -1){
+        return false;
+    }
+    for (let vertex of this.verticesConsidered){
+        if (vertex == this.sourceNode.id || vertex == this.sinkNode.id){
+            continue;
+        }
+        if (this.checkFlowAmount(vertex) == -1){
+            return false;
+        }
+    }
     return true;
   }
 
-  checkFlowAmount(){
-    const edgesConnectedToSource = this.network.adjMatrix[this.sourceNode.id].filter((el: any) => el != undefined && el.capacity);
-    let edgesConnectedToSink: Edge[] = []
-    this.network.adjMatrix[this.sinkNode.id].filter((el: any) => el != undefined && el.capacity == 0).forEach(
-        (edge: Edge) => {
-            edgesConnectedToSink.push(this.network.adjMatrix[edge.target.id][edge.source.id]);
-        }
-    )
-
-    let flowOutOfSource = 0;
-    let flowIntoSink = 0;
-
-    for (let edge of edgesConnectedToSource){
-        flowOutOfSource += edge.flow;
+  checkFlowAmount(vertexId: number) {
+    let edgesOutOf: Edge[];
+    let edgesInto: Edge[];
+    if (vertexId != 0){
+        edgesOutOf = this.network.adjMatrix[
+            vertexId
+          ].filter((el: any) => el != undefined && el.capacity);
+        edgesInto = [];
+          this.network.adjMatrix[vertexId]
+            .filter((el: any) => el != undefined && el.capacity == 0)
+            .forEach((edge: Edge) => {
+              edgesInto.push(
+                this.network.adjMatrix[edge.target.id][edge.source.id]
+              );
+        });
+    } else {
+        edgesOutOf = this.network.adjMatrix[
+            this.sourceNode.id
+          ].filter((el: any) => el != undefined && el.capacity);
+        edgesInto = [];
+          this.network.adjMatrix[this.sinkNode.id]
+            .filter((el: any) => el != undefined && el.capacity == 0)
+            .forEach((edge: Edge) => {
+              edgesInto.push(
+                this.network.adjMatrix[edge.target.id][edge.source.id]
+              );
+        });
     }
 
-    for (let edge of edgesConnectedToSink){
-        flowIntoSink += edge.flow
+    let flowOutOf = 0;
+    let flowInto = 0;
+
+    for (let edge of edgesOutOf) {
+      flowOutOf += +edge.flow;
     }
 
-    return flowOutOfSource == flowIntoSink;
+    for (let edge of edgesInto) {
+      flowInto += +edge.flow;
+    }
+
+    return flowOutOf == flowInto? flowOutOf : -1;
   }
-
 }

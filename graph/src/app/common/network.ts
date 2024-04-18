@@ -3,8 +3,8 @@ import { Vertex } from './vertex';
 
 export class Network {
   adjMatrix: any = [];
-  paths: any[] = [];
-  pathCounter: number = 0;
+  currentPath: any[] = [];
+  verticesConsidered: number[] = [];
 
   constructor() {}
 
@@ -18,7 +18,7 @@ export class Network {
   }
 
   isEdgeExist(source: number, target: number) {
-    return this.adjMatrix[source][target] != undefined
+    return this.adjMatrix[source][target] != undefined;
   }
 
   addEdge(sourceVertex: Vertex, targetVertex: Vertex, capacity: number) {
@@ -27,7 +27,11 @@ export class Network {
     if (source == target) return false;
 
     this.adjMatrix[source][target] = new Edge();
-    this.adjMatrix[source][target].setEdge(sourceVertex, targetVertex, capacity);
+    this.adjMatrix[source][target].setEdge(
+      sourceVertex,
+      targetVertex,
+      capacity
+    );
 
     // Set initial backward edge of 0
     if (!this.isEdgeExist(target, source)) {
@@ -60,46 +64,67 @@ export class Network {
     return visited.indexOf(sink) > -1;
   }
 
+  isEdgeInPaths(sourceId: number, sinkId: number, paths: Vertex[][]){
+    for (let path of paths){
+        if (this.isEdgeOnPath(sourceId, sinkId, path)){
+            return true;
+        }
+    }
+    return false;
+  }
+
+  isEdgeOnPath(edgeSource: number, edgeTarget: number, path: Vertex[]){
+    for (let i = 0; i < path.length - 1; i++){
+        if (path[i].id == edgeSource && path[i+1].id == edgeTarget){
+            return true;
+        }
+    }
+    return false;
+  }
+
   findPaths(sourceVertex: Vertex, sinkVertex: Vertex) {
     let visited: boolean[] = [];
-    for (let i = 0; i <= sinkVertex.id; i++){
-        visited[i] = false; // init all as not visited
+    let paths: any[] = [];
+    for (let i = 0; i <= this.adjMatrix.length; i++) {
+      visited[i] = false; // init all as not visited
     }
     if (this.areTwoNodesConnected(sourceVertex.id, sinkVertex.id)) {
-      this.findPathsRecursively(sourceVertex, sinkVertex, visited, [sourceVertex]);
+      this.currentPath = [];
+      this.findPathsRecursively(sourceVertex, sinkVertex, visited, paths);
     }
-    return this.paths;
+    return paths;
   }
 
   findPathsRecursively(
     sourceVertex: Vertex,
     sinkVertex: Vertex,
     visited: boolean[],
-    path: any[]
+    paths: any[]
   ): any {
-    
-    if (sourceVertex.id == sinkVertex.id){
-        return;
-    } 
-
-    let current = sourceVertex;
-    visited[current.id] = true; // mark as visited
-
-    let connectedEdges = this.adjMatrix[current.id].filter(
-        (edge: any) => edge != undefined && edge.capacity
-    );
-
-    let flow = Number.MAX_VALUE;
-
-    for (var i = 0; i < connectedEdges.length; i++){
-        var neighbor = connectedEdges[i].target;
-        if (!visited[neighbor.id]){
-            path.push(neighbor);
-            this.findPathsRecursively(neighbor, sinkVertex, visited, path);
-            path.pop();
-        }
+    if (visited[sourceVertex.id]) {
+      return;
     }
 
-    visited[current.id] = false;
+    this.currentPath.push(sourceVertex);
+    visited[sourceVertex.id] = true; // mark as visited
+
+    if (sourceVertex.id == sinkVertex.id) {
+      paths.push([...this.currentPath]);
+      visited[sourceVertex.id] = false;
+      this.currentPath.pop();
+      return;
+    }
+
+    let connectedEdges = this.adjMatrix[sourceVertex.id].filter(
+      (edge: any) => edge != undefined && edge.capacity
+    );
+
+    for (var i = 0; i < connectedEdges.length; i++) {
+      var neighbor = connectedEdges[i].target;
+      this.findPathsRecursively(neighbor, sinkVertex, visited, paths);
+    }
+
+    this.currentPath.pop();
+    visited[sourceVertex.id] = false;
   }
 }
