@@ -1,11 +1,16 @@
-<section fxLayout="column">
-  <h1 class="center mb-3 mt-5">Network Flow</h1>
+<section class = "main playspace">
+  <div class = "wrapper">
   <div class="row">
-    <div class="col-lg-8 order-1">
-        <div id = "cy"></div>
+    <div class="col-lg-7 order-1 playground">
+        <h1>Network Flow</h1>
+        <div id = "cy" #canvas></div>
     </div>
-    <div class="col-lg-4 order-2">
+    <div class="col-lg-5 order-2 prompt">
       <router-outlet></router-outlet>
     </div>
   </div>
+  </div>
+</section>
+<section class = "main explanation">
+    <app-explanation></app-explanation>
 </section>

@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import * as cytoscape from 'cytoscape';
 import { BehaviorSubject } from 'rxjs';
+import { Network } from 'src/app/common/network';
 import { Vertex } from 'src/app/common/vertex';
 import { GraphInitService } from 'src/app/services/graph-init.service';
 import { FlowValidator } from 'src/app/validators/flow-validator';
@@ -20,7 +21,6 @@ import { FlowValidator } from 'src/app/validators/flow-validator';
 export class SendFlowComponent implements OnInit {
   @Input() msg = 'Select an edge by clicking on the graph.';
   counter: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  paths!: Vertex[][];
 
   selectedEdge!: cytoscape.EdgeSingular;
   edgeSource: BehaviorSubject<number> = new BehaviorSubject<number>(0); // invalid source id (1-indexing)
@@ -32,12 +32,12 @@ export class SendFlowComponent implements OnInit {
   showFlowInput: boolean = false;
   edgeError: string = 'none';
   flowError: string = 'none';
-  flowCalculatedError: boolean = false;
-  clicked: boolean = false;
-  flowValue!: number;
+  showResult: string = 'none';
+  resultFlowCheck!: string;
+  selectedEdgeTxt!: string;
   sourceTxt!: string;
   sinkTxt!: string;
-  selectedEdgeTxt!: string;
+  paths!: Vertex[][];
 
   flowFormGroup: FormGroup = this.formBuilder.group({
     flow: new FormControl('0', [
@@ -62,14 +62,6 @@ export class SendFlowComponent implements OnInit {
     return this.flowCalculateGroup.get('flowVal')!;
   }
 
-  printPath(path: Vertex[]) {
-    var pathStr = '';
-    for (let vertex of path) {
-      pathStr += vertex.id + ' -> ';
-    }
-    return pathStr.substring(0, pathStr.length - 4);
-  }
-
   constructor(
     private formBuilder: FormBuilder,
     private graphInitServices: GraphInitService,
@@ -80,7 +72,6 @@ export class SendFlowComponent implements OnInit {
     this.paths = this.graphInitServices.paths;
     this.sourceTxt = this.graphInitServices.sourceNode.id.toString();
     this.sinkTxt = this.graphInitServices.sinkNode.id.toString();
-
     this.graphInitServices.cy.on('tap', (e) => {
       if (e.target._private.group == 'edges') {
         let sourceId = +e.target._private.data['source'];
@@ -96,6 +87,7 @@ export class SendFlowComponent implements OnInit {
           this.flowFormGroup.reset();
           this.msg = `Edge ${sourceId} -> ${sinkId} selected.`;
           this.showForm = true;
+          this.showFlowInput = false;
           this.selectedEdge = this.graphInitServices.cy
             .edges()
             .getElementById(e.target._private.data['id']);
@@ -114,6 +106,14 @@ export class SendFlowComponent implements OnInit {
         }
       }
     });
+  }
+
+  printPath(path: Vertex[]) {
+    var pathStr = '';
+    for (let vertex of path) {
+      pathStr += vertex.id + ' -> ';
+    }
+    return pathStr.substring(0, pathStr.length - 4);
   }
 
   isFlowBelowCapacity(): boolean {
@@ -155,13 +155,11 @@ export class SendFlowComponent implements OnInit {
   }
 
   compute() {
+    this.showResult = "block";
     if (this.flowVal.value == this.graphInitServices.checkFlowAmount(0)) {
-        this.flowCalculatedError = false;
-        this.flowValue = this.graphInitServices.checkFlowAmount(0);
-        this.clicked = true;
+        this.resultFlowCheck = `Correct! The flow is ${this.flowVal.value}.`
     } else {
-        this.flowCalculatedError = true;
-        this.clicked = true;
+        this.resultFlowCheck = "Incorrect flow amount! (Hint: Please make sure it is equal to the sum of the flow out of the source (and flow into the sink).)"
     }
   }
 
@@ -173,9 +171,14 @@ export class SendFlowComponent implements OnInit {
     this.edgeError = "none";
   }
 
+  closeModalResult(){
+    this.showResult = "none";
+  }
+
   goBack() {
     this.graphInitServices.resetNodes();
     this.graphInitServices.resetEdges();
+    this.graphInitServices.makeGraph();
     this.flowFormGroup.reset();
     this.router.navigate(['/step-one']);
   }

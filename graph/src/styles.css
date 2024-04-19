@@ -1,7 +1,14 @@
 :root {
+    --left-right-padding: 3rem;
+    --phone-padding: 1rem;
+    --header-height: 85px;
+    --font: "Reddit Mono", monospace!important;
     --pastel: #F8F3EA;
     --dark-navy: #0B1957;
     --dark-blue: #94B6EF;
+    --dark-gray: #D9D9D9;
+    --input-height: 45px;
+    --button-border-radius: 10px;
     --blue: #9ECCFA;
     --pastel-blue: #D1E0FF;
     --red: #990808;
@@ -9,27 +16,180 @@
 }
 
 html, body { height: 100%; overflow-x: hidden; background-color: var(--pastel)}
-body { margin: 0; font-family: "Reddit Mono", monospace!important; }
+body { margin: 0; font-family: var(--font); }
 
 h1 {
-    font-size: 40px;
+    font-size: 1.5rem;
     font-weight: 800;
+    color: var(--dark-blue);
+}
+
+h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+h5 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+h4, p {
     color: var(--dark-navy)
 }
 
-h2, h3, h4, h5 {
+p {
+    font-size: 0.9rem;
+}
+
+button {
+    background-color: var(--dark-blue);
+    border: none;
     color: var(--dark-navy);
+    border-radius: var(--button-border-radius);
+    padding: 8px 10px;
+}
+
+button:hover {
+    transition: .5s ease;
+    background-color: var(--dark-navy);
+    color: var(--pastel);
+}
+
+button:disabled, button:disabled:hover {
+    background-color: var(--pastel-blue);
+    color: var(--dark-blue)
+}
+
+.input-wrapper {
+    display: block;
+    height: 60px;
+    margin-top: 2rem;
+}
+
+.input-field {
+    width: 90%;
+    position: relative;
+}
+
+.input-field input {
+    width:100%;
+}
+
+.input-field label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background-color: var(--pastel);
+    padding: 0 5px;
+    font-size: 14px;
+    color: var(--dark-navy)
+}
+
+.error-message {
+    margin-top: 3px;
+    text-align: left!important;
+}
+
+.error-message p {
+    font-size: 13px;
+    color: var(--red);
+    margin-bottom: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    outline: none;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: var(--dark-green);
+    transition: background-color 5000s ease-in-out 0s;
+    box-shadow: inset 0 0 20px 20px var(--bg-color);
+}
+
+input[type=text] {
+    height:var(--input-height);
+    background-color: transparent;
+    outline:none;
+    border-radius: var(--button-border-radius);
+    border: 1px solid var(--dark-gray);
+    padding-left: 20px;
 }
 
 .center {
     text-align: center;
 }
 
+/*** Main ***/
+
+section.main {
+    padding: var(--left-right-padding);
+}
+
+section.main.playspace {
+    height: 100%;
+}
+
+section.main.explanation {
+    background-color: var(--dark-blue);
+}
+
+section.main.explanation p, section.main.explanation h4, section.main.explanation h1 {
+    color: var(--pastel);
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--dark-blue)
+}
+
+.wrapper>.row {
+    height: 100%;
+}
+
+.playground {
+    display: block;
+    height: 100%;
+    padding: 1rem;
+}
+
+.playground h1 {
+    margin-left: 1rem;
+}
+
+.prompt {
+    padding: 1rem;
+    border-left: 1px solid var(--dark-blue);
+}
+
+.path-log p {
+    font-size: 0.8rem;
+    margin-bottom: 3px;
+}
+
+.button-rows button {
+    width: 90%;
+}
+
+.alert.alert-warning {
+    background-color: var(--blue);
+    border-color: var(--dark-blue);
+    color: var(--dark-navy)!important;
+    font-size: 0.9rem;
+}
+
+
 /*** Canvas ***/
 
 #cy {
-    height: 500px;
+    height: 100%;
     width: 100%;
+}
+
+#cy.small {
+    height: 300px;
 }
 
 #cy canvas {
@@ -38,6 +198,30 @@ h2, h3, h4, h5 {
 }
 
 /*** Form ***/
+
+
+/*** Media display ***/
+
+@media (max-width: 991px) {
+    section.main.playspace {
+        height: auto;
+    }
+
+    section.main .playground {
+        height: 500px;
+    }
+
+    .prompt {
+        border: none;
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 578px){
+    section.main {
+        padding: var(--phone-padding)
+    }
+}
 
 
 

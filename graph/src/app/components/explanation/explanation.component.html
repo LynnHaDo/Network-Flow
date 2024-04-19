@@ -1,0 +1,17 @@
+<h1>Problem setup</h1>
+
+<h4 class = "mt-3">Given a directed graph $G=(V, E)$ with edge capacities $c_e$ for each edge $e$, construct a $s-t$ flow from a source vertex $s$ and a sink vertex $t$.</h4>
+
+<h4 class = "mt-3">What is a flow?</h4>
+<p>A <b>$s-t$ flow</b> is defined as a function $f: E \rightarrow R^+$ that satisfies 2 conditions:</p>
+<p><b>1. Capacity: </b> $0 \leq f(e) \leq c_e$ for each edge $e$. Meaning the flow on each edge should not exceed its capacity.</p>
+<p><b>2. Conservation: </b> For each internal vertex $v$ (not $s$ or $t$):</p>
+<p id = "sum">{{ sum }}</p>
+<p>Meaning the sum of the flow into each vertex should be equal to the sum of the flow out of that vertex.</p>
+
+<div class = "alert alert-warning mt-5" id = "aim">
+    {{ aim }} the <a href = "https://github.com/LynnHaDo/Network-Flow/pulls">Github repository</a> of this project. Thank you!
+</div>
+
+
+<p class = "center">Last updated: <span id = "currentDate"></span></p>

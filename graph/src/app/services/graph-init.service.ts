@@ -66,13 +66,19 @@ export class GraphInitService {
   paths!: Vertex[][];
   verticesConsidered!: number[];
   flowVal!: number;
+  panX: number = -40;
+  panY: number = 40;
+  zoomLevel: number = 1;
 
   constructor() {}
+
+  nativeGlobal(){
+    return window;
+  }
 
   makeGraph() {
     this.cy = cytoscape({
       container: document.getElementById('cy'),
-      layout: { name: 'grid', rows: 2 },
       style: [
         {
           selector: 'node',
@@ -112,6 +118,8 @@ export class GraphInitService {
           },
         },
       ],
+      zoom: this.zoomLevel,
+      pan: {x: this.panX, y: this.panY},
       userPanningEnabled: false,
       zoomingEnabled: false,
       userZoomingEnabled: false,

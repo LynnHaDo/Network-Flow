@@ -1,8 +1,10 @@
+<h4>Enter a source node and a sink node</h4>
 <form
         id="graph-input"
         [formGroup]="graphFormGroup"
         (ngSubmit)="onSubmit()"
       >
+       <div class = "input-wrapper">
         <div class="input-field">
           <label for="source">Source</label>
           <input type="text" id="source" formControlName="source" />
@@ -21,6 +23,8 @@
             <p>Please enter a number within the range!</p>
           </div>
         </div>
+    </div>
+    <div class = "input-wrapper">
         <div class="input-field mt-2">
             <label for="source">Sink</label>
             <input type="text" id="sink" formControlName="sink" />
@@ -39,6 +43,7 @@
                 <p>Please enter a number within the range!</p>
               </div>
           </div>
+        </div>
         <button
           type="submit"
           class="fill-btn mt-3"

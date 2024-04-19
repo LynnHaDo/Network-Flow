@@ -7,12 +7,14 @@ import { AppComponent } from './app.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SelectNodesComponent } from './components/select-nodes/select-nodes.component';
 import { SendFlowComponent } from './components/send-flow/send-flow.component';
+import { ExplanationComponent } from './components/explanation/explanation.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SelectNodesComponent,
-    SendFlowComponent
+    SendFlowComponent,
+    ExplanationComponent
   ],
   imports: [
     BrowserModule,

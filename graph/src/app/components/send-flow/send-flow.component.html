@@ -1,9 +1,9 @@
-<h4 class="mb-2">{{ msg }}</h4>
-<div class="path-log mb-2">
-  <h5>Available paths from {{ sourceTxt }} to {{ sinkTxt }}</h5>
-  <p *ngFor="let path of paths">
-    {{ printPath(path) }}
-  </p>
+<h4>{{ msg }}</h4>
+<div class="path-log mb-2 mt-1">
+    <p>Available paths from {{ sourceTxt }} to {{ sinkTxt }}</p>
+    <p *ngFor="let path of paths">
+      {{ printPath(path) }}
+    </p>
 </div>
 <div id="flow-input" *ngIf="showForm">
   <form id="graph-input" [formGroup]="flowFormGroup" (ngSubmit)="onSubmit()">
@@ -28,49 +28,45 @@
       </div>
     </div>
 
-    <div class="row button-rows mt-4">
-      <button type="submit" [disabled]="flowFormGroup.invalid">Continue</button>
+    <div class="mt-3">
+      <button type="submit" [disabled]="flowFormGroup.invalid" class = "mb-2">Continue</button>
     </div>
   </form>
 </div>
 <div class="row mt-2">
-  <div class="col-lg-6">
+  <div class="col-lg-6 mb-1">
     <button type="button" (click)="calculateFlow()">Calculate flow</button>
-    <div class="mt-2" *ngIf="showFlowInput">
-      <form [formGroup]="flowCalculateGroup" (ngSubmit)="compute()">
-        <div class="input-wrapper">
-          <div class="input-field">
-            <label for="flowVal">Enter the flow value</label>
-            <input type="text" id="flowVal" formControlName="flowVal" />
-          </div>
-          <div
-            *ngIf="flowVal.invalid && (flowVal.touched || flowVal.dirty)"
-            class="error-message"
-          >
-            <div *ngIf="flowVal.errors?.['required']">
-              <p>Please enter a flow amount.</p>
-            </div>
-            <div *ngIf="flowVal.errors?.['pattern']">
-              <p>Please enter an integer.</p>
-            </div>
-          </div>
-        </div>
-        <button type="submit" [disabled]="flowCalculateGroup.invalid">
-          Check
-        </button>
-        <div class = "alert alert-success" *ngIf = "clicked && !flowCalculatedError">
-            Correct! The flow is {{ flowValue }}.
-        </div>
-        <div class = "alert alert-warning" *ngIf = "clicked && flowCalculatedError">
-            Incorrect flow amount! (Hint: Please make sure it is equal to the sum of the flow out of the source (and flow into the sink).)
-        </div>
-      </form>
-    </div>
   </div>
-  <div class="col-lg-6">
+  <div class="col-lg-6 mb-1">
     <button type="button" class="regular-btn" (click)="goBack()">
       Back to step 1
     </button>
+  </div>
+</div>
+<div class="row mt-2">
+  <div *ngIf="showFlowInput">
+    <form [formGroup]="flowCalculateGroup" (ngSubmit)="compute()">
+      <div class="input-wrapper">
+        <div class="input-field">
+          <label for="flowVal">Enter the flow value</label>
+          <input type="text" id="flowVal" formControlName="flowVal" />
+        </div>
+        <div
+          *ngIf="flowVal.invalid && (flowVal.touched || flowVal.dirty)"
+          class="error-message"
+        >
+          <div *ngIf="flowVal.errors?.['required']">
+            <p>Please enter a flow amount.</p>
+          </div>
+          <div *ngIf="flowVal.errors?.['pattern']">
+            <p>Please enter an integer.</p>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class = "mt-3" [disabled]="flowCalculateGroup.invalid">
+        Check
+      </button>
+    </form>
   </div>
 </div>
 <div
@@ -85,10 +81,15 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        The edge selected ({{ selectedEdgeTxt }}) is not on any paths from the source {{ sourceTxt }} to the sink {{ sinkTxt }}! Please select again.
+        The edge selected ({{ selectedEdgeTxt }}) is not on any paths from the
+        source {{ sourceTxt }} to the sink {{ sinkTxt }}! Please select again.
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModalEdge()">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeModalEdge()"
+        >
           Close
         </button>
       </div>
@@ -108,10 +109,40 @@
     <div class="modal-content">
       <div class="modal-body">
         The flow is invalid! (Hint: double check each <em>internal</em> vertices
-        if the sum of flow in = sum of flow out)
+        if the sum of flow in = sum of flow out [conservation constraint])
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeModalFlow()">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeModalFlow()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal"
+  id="resultModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="resultModalLabel"
+  aria-hidden="true"
+  [ngStyle]="{ display: showResult }"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        {{ resultFlowCheck }}
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeModalResult()"
+        >
           Close
         </button>
       </div>
