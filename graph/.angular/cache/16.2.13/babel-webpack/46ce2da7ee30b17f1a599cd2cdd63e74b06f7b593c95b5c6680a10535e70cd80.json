@@ -1,0 +1,1 @@
+{"ast":null,"code":"export class Vertex {\n  constructor(id, x, y, name) {\n    this.id = id;\n    this.x = x;\n    this.y = y;\n    this.name = name;\n  }\n  printVertex() {\n    return \"Vertex \" + this.id;\n  }\n}","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}
