@@ -83,19 +83,27 @@ See the [open issues](https://github.com/LynnHaDo/Network-Flow/issues) for a ful
 - Node: 18.18.2
 - Package Manager: npm 9.8.1
 - Angular: 16.2.12
-
-Package                         Version
----------------------------------------------------------
+- Packages:
 @angular-devkit/architect       0.1602.13
+
 @angular-devkit/build-angular   16.2.13
+
 @angular-devkit/core            16.2.13
+
 @angular-devkit/schematics      16.2.14
+
 @angular/cdk                    16.2.14
+
 @angular/cli                    16.2.14
+
 @angular/material               16.2.14
+
 @schematics/angular             16.2.14
+
 rxjs                            7.8.1
+
 typescript                      5.1.6
+
 zone.js                         0.13.3
 
 ### Installation
@@ -115,7 +123,13 @@ git clone https://github.com/LynnHaDo/Network-Flow.git
 cd graph
 ```
 
-4. Run on server
+4. Install packages
+
+```
+npm install
+```
+
+5. Run on server
 
 ```
 ng s
